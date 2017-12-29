@@ -1,0 +1,7 @@
+You have parked your car at parking lot and want to calculate the total parking cost.
+- there is an entry ticket of 2
+- first hour charged are 3
+- charge of 4 per hour for every hour after the first hour
+
+Given start time and end time as two strings in the format "HH:MM".
+assume start time is always lesser than end time.
