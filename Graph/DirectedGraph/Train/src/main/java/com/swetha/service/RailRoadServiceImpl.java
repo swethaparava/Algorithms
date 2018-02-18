@@ -1,24 +1,21 @@
 package com.swetha.service;
 
+import com.swetha.constants.Constants;
 import com.swetha.model.DirectedGraph;
 import com.swetha.model.Node;
 import com.swetha.model.Path;
 
 import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.util.*;
 import java.util.function.Predicate;
+
+import static com.swetha.constants.Constants.INVALID_DATA;
 
 public class RailRoadServiceImpl implements RailRoadService {
 
     private DirectedGraph<String> graph;
     private Map<String, String> cities;
     private Map<String, List<String>> inputMap;
-    private static final String SHORTEST_PATH = "shortest_path";
-    private static final String EXACT_STOPS = "exact_stops";
-    private static final String MAX_STOPS = "max_stops";
-    private static final String DISTANCE = "distance";
-    private static final String MAX_DISTANCE = "max_distance";
 
 
     public RailRoadServiceImpl() {
@@ -28,18 +25,20 @@ public class RailRoadServiceImpl implements RailRoadService {
     }
 
     @Override
-    public void initialize(String path) throws FileNotFoundException {
+    public void initialize(String path) throws Exception {
         Scanner in = new Scanner(new FileInputStream(path));
         while (in.hasNext()) {
             String input = in.next();
             parse(input);
         }
+        validate();
     }
+
 
     @Override
     public void findDistance() {
-        if (inputMap.containsKey(DISTANCE)) {
-            List<String> distanceStrings = inputMap.get(DISTANCE);
+        if (inputMap.containsKey(Constants.DISTANCE)) {
+            List<String> distanceStrings = inputMap.get(Constants.DISTANCE);
             for (String input : distanceStrings) {
                 try {
                     System.out.println("distance for " + input + " is: " + distanceOfRoute(input.split(",")));
@@ -48,16 +47,18 @@ public class RailRoadServiceImpl implements RailRoadService {
                 }
             }
         }
-
     }
 
     @Override
     public void findCountWithMaxStops() {
-        if (inputMap.containsKey(MAX_STOPS)) {
-            List<String> distanceStrings = inputMap.get(MAX_STOPS);
+        if (inputMap.containsKey(Constants.MAX_STOPS)) {
+            List<String> distanceStrings = inputMap.get(Constants.MAX_STOPS);
             for (String input : distanceStrings) {
                 try {
                     String[] inputs = input.split(",");
+                    if (inputs.length < 3 || inputs[2].trim().length() < 1) {
+                        throw new IllegalArgumentException(INVALID_DATA);
+                    }
                     System.out.println("Number of trips with max stops for " + input + " is: " +
                             numberOfTripsWithMaxStops(inputs[0], inputs[1], Integer.valueOf(inputs[2])));
                 } catch (Exception e) {
@@ -69,11 +70,14 @@ public class RailRoadServiceImpl implements RailRoadService {
 
     @Override
     public void findCountWithExactStops() {
-        if (inputMap.containsKey(EXACT_STOPS)) {
-            List<String> distanceStrings = inputMap.get(EXACT_STOPS);
+        if (inputMap.containsKey(Constants.EXACT_STOPS)) {
+            List<String> distanceStrings = inputMap.get(Constants.EXACT_STOPS);
             for (String input : distanceStrings) {
                 try {
                     String[] inputs = input.split(",");
+                    if (inputs.length < 3 || inputs[2].trim().length() < 1) {
+                        throw new IllegalArgumentException(INVALID_DATA);
+                    }
                     System.out.println("Number of trips with exact stops for " + input + " is: " +
                             numberOfTripsWithExactStops(inputs[0], inputs[1], Integer.valueOf(inputs[2])));
                 } catch (Exception e) {
@@ -86,11 +90,14 @@ public class RailRoadServiceImpl implements RailRoadService {
 
     @Override
     public void findShortestLength() {
-        if (inputMap.containsKey(SHORTEST_PATH)) {
-            List<String> distanceStrings = inputMap.get(SHORTEST_PATH);
+        if (inputMap.containsKey(Constants.SHORTEST_PATH)) {
+            List<String> distanceStrings = inputMap.get(Constants.SHORTEST_PATH);
             for (String input : distanceStrings) {
                 try {
                     String[] inputs = input.split(",");
+                    if (inputs.length < 2) {
+                        throw new IllegalArgumentException(INVALID_DATA);
+                    }
                     System.out.println("shortest path for " + input + " is: " + lengthOfShortestRoute(inputs[0], inputs[1]));
                 } catch (Exception e) {
                     System.out.println("shortest path for " + input + " is: " + e.getMessage());
@@ -101,11 +108,14 @@ public class RailRoadServiceImpl implements RailRoadService {
 
     @Override
     public void findCountWithMaxDistance() {
-        if (inputMap.containsKey(MAX_DISTANCE)) {
-            List<String> distanceStrings = inputMap.get(MAX_DISTANCE);
+        if (inputMap.containsKey(Constants.MAX_DISTANCE)) {
+            List<String> distanceStrings = inputMap.get(Constants.MAX_DISTANCE);
             for (String input : distanceStrings) {
                 try {
                     String[] inputs = input.split(",");
+                    if (inputs.length < 3 || inputs[2].trim().length() < 1) {
+                        throw new IllegalArgumentException(INVALID_DATA);
+                    }
                     System.out.println("Number of trips with max distance for " + input + " is: " +
                             numberOfDiffRoutesWithMaxDistance(inputs[0], inputs[1], Integer.valueOf(inputs[2])));
                 } catch (Exception e) {
@@ -148,12 +158,9 @@ public class RailRoadServiceImpl implements RailRoadService {
     @Override
     public int lengthOfShortestRoute(String start, String end) throws Exception {
         Validate(start, end);
-
         graph.dijkstra(start, end);
-
         Node endNode = graph.getNode(end);
         Path path = endNode.path(graph.getNode(start), graph);
-
         if (path.getNodes().isEmpty()) {
             throw new Exception("NODE NOT REACHABLE");
         } else {
@@ -167,8 +174,8 @@ public class RailRoadServiceImpl implements RailRoadService {
         // Predicate functional interface provided by java 8
         Predicate<Path> terminate = path -> path.distance() > maxDistance;
         Predicate<Path> condition = path -> end.equals(path.last()) && path.distance() <= maxDistance;
-        return count(start, terminate, condition);
 
+        return count(start, terminate, condition);
     }
 
     private int count(String start, Predicate<Path> terminate, Predicate<Path> condition) {
@@ -185,17 +192,25 @@ public class RailRoadServiceImpl implements RailRoadService {
 
     private void parse(String input) {
         if (input != null && input.length() > 0) {
-            String key = input.split(";")[0].toLowerCase();
-            String value = input.split(";")[1];
+            String key = input.split(Constants.SEMI_COLON)[0].toLowerCase();
+            String value = input.split(Constants.SEMI_COLON)[1];
 
-            if (key.equals("graph")) {
-                initGraphInput(value);
-            } else {
-                if (!inputMap.containsKey(key)) {
-                    inputMap.put(key, new ArrayList<>());
-                }
-                inputMap.get(key).add(value);
+            if (!inputMap.containsKey(key)) {
+                inputMap.put(key, new ArrayList<>());
             }
+            inputMap.get(key).add(value);
+            if (key.equals(Constants.GRAPH)) {
+                initGraphInput(value);
+            }
+        }
+    }
+
+    private void validate() throws Exception {
+        if (!inputMap.containsKey(Constants.GRAPH)) {
+            throw new Exception("No graph provided in the input");
+        }
+        if (inputMap.get(Constants.GRAPH).size() > 1) {
+            throw new Exception("Multiple graph provided in the input file");
         }
     }
 
@@ -227,6 +242,14 @@ public class RailRoadServiceImpl implements RailRoadService {
         }
     }
 
+    /**
+     * validates whether given nodes are part of the graph or not
+     * if a node does not exists in graph throws exception with 'Node does not exists' message
+     *
+     * @param start
+     * @param end
+     * @throws Exception
+     */
     private void Validate(String start, String end) throws Exception {
         if (graph.contains(start) && graph.contains(end)) {
             // all good

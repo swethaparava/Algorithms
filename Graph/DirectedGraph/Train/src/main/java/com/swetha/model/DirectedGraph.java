@@ -47,18 +47,25 @@ public class DirectedGraph<T> {
         return graph.get(key);
     }
 
+    /**
+     * dijkstra's algorithm to find the shortest distance between a source and destination
+     * uses priority queue using distance as the comparing measure
+     *
+     * @param start
+     * @param end
+     */
     public void dijkstra(String start, String end) {
         PriorityQueue<Node> queue = new PriorityQueue<>();
         // Set distance to zero for initial node, and to infinity for all other.
         Set<T> nodes = getNodes();
-        for (T node : nodes) {
-            Node Node = getNode(node);
-            Node.setDistance(Integer.MAX_VALUE);
-            if (start.equals(node)) {
-                Node.setDistance(0);
-                Node.setPrevious(Node);
+        for (T n : nodes) {
+            Node node = getNode(n);
+            node.setDistance(Integer.MAX_VALUE);
+            if (start.equals(n)) {
+                node.setDistance(0);
+                node.setPrevious(node);
             }
-            queue.add(Node);
+            queue.add(node);
         }
 
         // Compute distances

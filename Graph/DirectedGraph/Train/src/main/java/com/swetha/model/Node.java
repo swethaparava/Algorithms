@@ -60,16 +60,19 @@ public class Node<T> implements Comparable<Node>{
                     break;
                 }
             }
-
             return new Path(nodes, distance);
         }
     }
 
+    /**
+     * This is specifically used in dijikstra's algorithm. Priority queue uses this comparision to
+     * store/poll the elements.
+     * @param other
+     * @return
+     */
     public int compareTo(Node other) {
         return distance.compareTo(other.getDistance());
     }
-
-
 
     @Override
     public String toString() {

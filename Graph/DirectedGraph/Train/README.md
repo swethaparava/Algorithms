@@ -1,3 +1,19 @@
+Requirements
+
+- JDK 1.8 or higher
+- Maven 3.3.9 or higher
+
+This project is a Maven project and IDE used is IntelliJ IDEA.
+To build, open up your Terminal and fire up the following commands:
+
+$mvn clean install
+
+Go to target folder and execute below command
+$java -jar Trains-1.0.jar ${path_to_input_file}
+
+Please make sure you provide the input.text file location correctly.
+Refer to test/resources/input.txt file for sample input format.
+
 Problem Statement
 
 The local commuter railroad services a number of towns in Kiwiland.  Because of monetary concerns, all of the tracks are 'one-way.'  That is, a route from Kaitaia to Invercargill does not imply the existence of a route from Invercargill to Kaitaia.  In fact, even if both of these routes do happen to exist, they are distinct and are not necessarily the same distance!
@@ -32,20 +48,6 @@ Output #7: 3
 Output #8: 9
 Output #9: 9
 Output #10: 7
-
-
-Requirenments
-
-- JDK 1.8 or higher
-- Maven
-
-The project is a Maven project and IDE used is IntelliJ IDEA. To build, open up your Terminal and fire up the following commands:
-
-Please make sure you provide the input.text file location correctly.
-
-$mvn clean install
-$ java -jar Trains.jar input.txt
-
 
 
 

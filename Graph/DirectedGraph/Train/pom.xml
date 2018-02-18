@@ -34,7 +34,7 @@
                         <manifest>
                             <addClasspath>true</addClasspath>
                             <classpathPrefix>lib/</classpathPrefix>
-                            <mainClass>com.swetha.Starter</mainClass>
+                            <mainClass>com.swetha.RailRoadBootStrapper</mainClass>
                         </manifest>
                     </archive>
                 </configuration>

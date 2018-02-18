@@ -14,7 +14,7 @@ public class RailRoadServiceTest {
     private RailRoadService service;
 
     @Before
-    public void initObjects() {
+    public void initObjects() throws Exception {
         try {
             ClassLoader classLoader = getClass().getClassLoader();
             File file = new File(classLoader.getResource("input.txt").getFile());
@@ -53,26 +53,26 @@ public class RailRoadServiceTest {
     }
 
     @Test
-    public void testCountRoutesWithMaxHops() throws Exception {
+    public void testCountRoutesWithMaxStops() throws Exception {
         int count = service.numberOfTripsWithMaxStops("C", "C", 3);
         assertEquals(2, count);
     }
 
     @Test
     public void testFindCountWithMaxStops() throws Exception {
-        // prints the count with max hops
+        // prints the count with max stops
         service.findCountWithMaxStops();
     }
 
     @Test
-    public void testCountRoutesWithExactHops() throws Exception {
+    public void testCountRoutesWithExactStops() throws Exception {
         int count = service.numberOfTripsWithExactStops("A", "C", 4);
         assertEquals(3, count);
     }
 
     @Test
     public void testFindCountWithExactStops() throws Exception {
-        // prints the count with exact hops
+        // prints the count with exact stops
         service.findCountWithExactStops();
     }
 
